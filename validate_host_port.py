@@ -34,6 +34,7 @@ def validate_host_port(input_string):
             return False, f"'{host}' is not a valid IP address."
     
     return True, f"Valid host and port: {host}:{port}"
+
 '''
 # --- Example Usage ---
 test_strings = [

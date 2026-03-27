@@ -67,6 +67,18 @@ class ObjectStoreServicer:
             log.error("--listen address '%s' is not in --cluster list %s", self.listen, self.cluster, )
             sys.exit(1)
             
+        # Set the primary node from the sorted list self.cluster
+        self.primary = self.cluster[0]
+        self.is_primary = (self.listen == self.primary)
+        self.replicas = [i for i in self.cluster if i != self.listen]
+        log.info(
+            "This is a node in the cluster! Now listening: %s, Role: %s, Primary: %s, Replicas list: %s",
+            self.listen,
+            "PRIMARY" if self.is_primary else "REPLICA",
+            self.primary,
+            self.replicas,
+        )
+            
     
     def Put(self, request, context):
         pass
