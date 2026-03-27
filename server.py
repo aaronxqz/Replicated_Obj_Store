@@ -51,7 +51,6 @@ class ObjectStoreServicer:
         )
         
         # 2. Validates the form "localhost:port"
-        
         is_valid, message = vhp.validate_host_port(self.listen)
         if not is_valid : 
             log.error(message, )
@@ -67,7 +66,7 @@ class ObjectStoreServicer:
             log.error("--listen address '%s' is not in --cluster list %s", self.listen, self.cluster, )
             sys.exit(1)
             
-        # Set the primary node from the sorted list self.cluster
+        # 3. Set the primary node from the sorted list self.cluster and print summary info
         self.primary = self.cluster[0]
         self.is_primary = (self.listen == self.primary)
         self.replicas = [i for i in self.cluster if i != self.listen]
@@ -78,6 +77,26 @@ class ObjectStoreServicer:
             self.primary,
             self.replicas,
         )
+        
+        # 4. Generate stub dictionary for sending data from primary to replicas
+        self.replica_stubs: dict[str, pb_grpc.ObjectStoreStub] = {}
+        for addr in self.cluster:
+            channel = grpc.insecure_channel(addr)
+            self.replica_stubs[addr] = pb_grpc.ObjectStoreStub(addr)
+        
+        # 5. k-v pair for dictionary storage
+        self.stores: dict[str, bytes] = {}
+        
+        # 6. Mutex lock
+        self.lock = threading.Lock()
+        
+        # --- 7. Stats counters ---------------------------------------------
+        # Only successful operations increment these.
+        # Reset() zeroes them all.
+        self.stat_puts    = 0
+        self.stat_gets    = 0
+        self.stat_deletes = 0
+        self.stat_updates = 0
             
     
     def Put(self, request, context):
