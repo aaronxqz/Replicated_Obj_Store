@@ -1,0 +1,16 @@
+{"pid": 3528027, "op": "get", "ops": 3515, "errors": 0, "elapsed_s": 30.008, "ops_per_s": 117.13, "p50_ms": 7.951, "p95_ms": 12.928, "p99_ms": 15.795}
+{"pid": 3528023, "op": "get", "ops": 3522, "errors": 0, "elapsed_s": 30.007, "ops_per_s": 117.37, "p50_ms": 7.95, "p95_ms": 12.692, "p99_ms": 15.771}
+{"pid": 3528018, "op": "get", "ops": 3518, "errors": 0, "elapsed_s": 30.001, "ops_per_s": 117.26, "p50_ms": 7.951, "p95_ms": 12.849, "p99_ms": 15.345}
+{"pid": 3528021, "op": "get", "ops": 3517, "errors": 0, "elapsed_s": 30.003, "ops_per_s": 117.22, "p50_ms": 7.959, "p95_ms": 12.816, "p99_ms": 15.619}
+{"pid": 3528028, "op": "get", "ops": 3526, "errors": 0, "elapsed_s": 30.001, "ops_per_s": 117.53, "p50_ms": 7.916, "p95_ms": 12.863, "p99_ms": 15.459}
+{"pid": 3528024, "op": "get", "ops": 3520, "errors": 0, "elapsed_s": 30.009, "ops_per_s": 117.3, "p50_ms": 7.97, "p95_ms": 12.637, "p99_ms": 15.504}
+{"pid": 3528034, "op": "get", "ops": 3525, "errors": 0, "elapsed_s": 30.002, "ops_per_s": 117.49, "p50_ms": 7.957, "p95_ms": 12.762, "p99_ms": 15.559}
+{"pid": 3528035, "op": "get", "ops": 3532, "errors": 0, "elapsed_s": 30.007, "ops_per_s": 117.71, "p50_ms": 7.928, "p95_ms": 12.736, "p99_ms": 15.545}
+{"pid": 3528026, "op": "get", "ops": 3516, "errors": 0, "elapsed_s": 30.005, "ops_per_s": 117.18, "p50_ms": 7.983, "p95_ms": 12.902, "p99_ms": 15.685}
+{"pid": 3528030, "op": "get", "ops": 3528, "errors": 0, "elapsed_s": 30.005, "ops_per_s": 117.58, "p50_ms": 7.959, "p95_ms": 12.531, "p99_ms": 15.422}
+{"pid": 3528033, "op": "get", "ops": 3523, "errors": 0, "elapsed_s": 30.007, "ops_per_s": 117.41, "p50_ms": 7.977, "p95_ms": 12.791, "p99_ms": 15.636}
+{"pid": 3528019, "op": "get", "ops": 3518, "errors": 0, "elapsed_s": 30.001, "ops_per_s": 117.26, "p50_ms": 7.995, "p95_ms": 12.731, "p99_ms": 15.478}
+{"pid": 3528029, "op": "get", "ops": 3505, "errors": 0, "elapsed_s": 30.002, "ops_per_s": 116.82, "p50_ms": 8.0, "p95_ms": 12.936, "p99_ms": 15.657}
+{"pid": 3528025, "op": "get", "ops": 3533, "errors": 0, "elapsed_s": 30.002, "ops_per_s": 117.76, "p50_ms": 7.925, "p95_ms": 12.846, "p99_ms": 15.558}
+{"pid": 3528031, "op": "get", "ops": 3522, "errors": 0, "elapsed_s": 30.003, "ops_per_s": 117.39, "p50_ms": 7.988, "p95_ms": 12.716, "p99_ms": 15.508}
+{"pid": 3528020, "op": "get", "ops": 3529, "errors": 0, "elapsed_s": 30.009, "ops_per_s": 117.6, "p50_ms": 7.953, "p95_ms": 12.779, "p99_ms": 15.42}

@@ -158,8 +158,16 @@ class ObjectStoreHandler(BaseHTTPRequestHandler):
         application/octet-stream and HTTP 200.
         On error, call self._send_grpc_error(e).
         """
-        # TODO: implement this method.
-        pass
+        # _read_stub() picks a node using round-robin so reads are spread
+        # across the whole cluster, not just the primary.
+        try:
+            response = self._read_stub().Get(pb.GetRequest(key=key))
+            # response.value is already raw bytes — send it with no encoding.
+            # The spec says: do NOT base64-encode or transform values.
+            self._send(200, "application/octet-stream", response.value)
+        except grpc.RpcError as e:
+            # e.g. NOT_FOUND → _send_grpc_error translates to HTTP 404
+            self._send_grpc_error(e)
 
     def _handle_list(self):
         """
@@ -171,8 +179,22 @@ class ObjectStoreHandler(BaseHTTPRequestHandler):
         Example response body:
             [{"key": "foo", "size_bytes": 12}, {"key": "bar", "size_bytes": 4}]
         """
-        # TODO: implement this method.
-        pass
+        try:
+            # List() takes no arguments — use the pre-made Empty message.
+            response = self._read_stub().List(empty_pb2.Empty())
+
+            # response.entries is a repeated ListEntry field.
+            # Each entry has .key (str) and .size_bytes (int).
+            # We convert it to a plain Python list of dicts so json.dumps
+            # can serialize it — protobuf objects can't be JSON-serialized
+            # directly.
+            entries = [
+                {"key": entry.key, "size_bytes": entry.size_bytes}
+                for entry in response.entries
+            ]
+            self._send_json(200, entries)
+        except grpc.RpcError as e:
+            self._send_grpc_error(e)
 
     def _handle_stats(self):
         """
@@ -184,8 +206,23 @@ class ObjectStoreHandler(BaseHTTPRequestHandler):
         Example response body:
             {"live_objects": 3, "total_bytes": 128, "puts": 5, ...}
         """
-        # TODO: implement this method.
-        pass
+        try:
+            response = self._read_stub().Stats(empty_pb2.Empty())
+
+            # Pack all six fields of StatsResponse into a dict.
+            # Field names must match exactly what the spec says the JSON
+            # response should look like.
+            data = {
+                "live_objects": response.live_objects,
+                "total_bytes":  response.total_bytes,
+                "puts":         response.puts,
+                "gets":         response.gets,
+                "deletes":      response.deletes,
+                "updates":      response.updates,
+            }
+            self._send_json(200, data)
+        except grpc.RpcError as e:
+            self._send_grpc_error(e)
 
     # ------------------------------------------------------------------
     # PUT /objects/<key>   -- store a new object
@@ -212,6 +249,7 @@ class ObjectStoreHandler(BaseHTTPRequestHandler):
         On error, call self._send_grpc_error(e).
         """
         value = self._read_body()
+        print(f"DEBUG: Received value {value} for key {key}")
         try:
             self.server.primary_stub.Put(pb.PutRequest(key=key, value=value))
             self._send(200, "text/plain", b"OK")
@@ -241,8 +279,16 @@ class ObjectStoreHandler(BaseHTTPRequestHandler):
         On success, send HTTP 200 with body b"OK".
         On error, call self._send_grpc_error(e).
         """
-        # TODO: implement this method.
-        pass
+        # Identical structure to _handle_put (already filled in above).
+        # _read_body() reads however many bytes Content-Length says are coming.
+        # Writes MUST go to the primary — replicas will reject with
+        # FAILED_PRECONDITION if you send them here.
+        value = self._read_body()
+        try:
+            self.server.primary_stub.Update(pb.UpdateRequest(key=key, value=value))
+            self._send(200, "text/plain", b"OK")
+        except grpc.RpcError as e:
+            self._send_grpc_error(e)
 
     # ------------------------------------------------------------------
     # DELETE /objects/<key>  -- delete a single object
@@ -267,16 +313,29 @@ class ObjectStoreHandler(BaseHTTPRequestHandler):
         On success, send HTTP 200 with body b"OK".
         On error, call self._send_grpc_error(e).
         """
-        # TODO: implement this method.
-        pass
+        # No request body — Delete only needs the key, which comes from the URL.
+        # It's already extracted and passed in as the `key` parameter.
+        try:
+            self.server.primary_stub.Delete(pb.DeleteRequest(key=key))
+            self._send(200, "text/plain", b"OK")
+        except grpc.RpcError as e:
+            # e.g. NOT_FOUND → HTTP 404
+            self._send_grpc_error(e)
 
     def _handle_reset(self):
         """
         Call Reset() on the primary.
         Always returns HTTP 200 with body b"OK".
         """
-        # TODO: implement this method.
-        pass
+        # Reset() takes no arguments and always returns OK per the spec,
+        # so there are no error cases to handle. The try/except is here
+        # as a safety net in case the primary is unreachable.
+        try:
+            self.server.primary_stub.Reset(empty_pb2.Empty())
+        except grpc.RpcError as e:
+            self._send_grpc_error(e)
+            return
+        self._send(200, "text/plain", b"OK")
 
 
 # ---------------------------------------------------------------------------

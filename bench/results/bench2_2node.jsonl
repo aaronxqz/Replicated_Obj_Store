@@ -1,0 +1,8 @@
+{"pid": 3547155, "num_nodes": 2, "ops": 1524, "errors": 0, "ops_per_s": 50.8, "p50_ms": 19.037, "p95_ms": 29.735, "p99_ms": 34.38}
+{"pid": 3547154, "num_nodes": 2, "ops": 1535, "errors": 0, "ops_per_s": 51.17, "p50_ms": 18.692, "p95_ms": 29.883, "p99_ms": 36.086}
+{"pid": 3547152, "num_nodes": 2, "ops": 1511, "errors": 0, "ops_per_s": 50.37, "p50_ms": 19.308, "p95_ms": 30.158, "p99_ms": 35.523}
+{"pid": 3547153, "num_nodes": 2, "ops": 1505, "errors": 0, "ops_per_s": 50.17, "p50_ms": 19.152, "p95_ms": 29.681, "p99_ms": 36.533}
+{"pid": 3547159, "num_nodes": 2, "ops": 1517, "errors": 0, "ops_per_s": 50.57, "p50_ms": 19.17, "p95_ms": 29.879, "p99_ms": 37.22}
+{"pid": 3547158, "num_nodes": 2, "ops": 1528, "errors": 0, "ops_per_s": 50.93, "p50_ms": 18.887, "p95_ms": 29.786, "p99_ms": 35.675}
+{"pid": 3547156, "num_nodes": 2, "ops": 1501, "errors": 0, "ops_per_s": 50.03, "p50_ms": 18.983, "p95_ms": 30.321, "p99_ms": 37.276}
+{"pid": 3547157, "num_nodes": 2, "ops": 1526, "errors": 0, "ops_per_s": 50.87, "p50_ms": 18.699, "p95_ms": 29.748, "p99_ms": 36.601}

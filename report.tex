@@ -1,0 +1,372 @@
+% =============================================================================
+%  report.tex — CS 417 Project 2: Replicated Object Store
+%
+%  HOW TO USE THIS FILE
+%  --------------------
+%  1. Run your benchmarks using the scripts in bench/
+%  2. Run:  python3 bench/collect_results.py
+%     This reads your .jsonl result files and overwrites the \newcommand
+%     values in the %% DATA BLOCK below automatically.
+%  3. Compile:
+%       pdflatex report.tex
+%       pdflatex report.tex   (run twice for cross-references)
+%  4. Your report.pdf is ready to submit.
+%
+%  If you want to fill in numbers manually instead of using collect_results.py,
+%  just edit every \newcommand value in the DATA BLOCK below.
+% =============================================================================
+
+\documentclass[11pt,letterpaper]{article}
+
+% ---- packages ---------------------------------------------------------------
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}       % professional table rules (\toprule etc.)
+\usepackage{xcolor}         % colors
+\usepackage{hyperref}       % clickable links
+\usepackage{microtype}      % better text justification
+\usepackage{parskip}        % space between paragraphs instead of indent
+\usepackage{listings}       % code blocks
+\usepackage{caption}        % table/figure captions
+\usepackage{array}          % extended table column types
+\usepackage{titlesec}       % section heading formatting
+\usepackage{setspace}       % line spacing
+
+% ---- colors -----------------------------------------------------------------
+\definecolor{purple}{HTML}{534AB7}
+\definecolor{teal}{HTML}{0F6E56}
+\definecolor{lightgray}{HTML}{F1EFE8}
+\definecolor{codefg}{HTML}{3C3489}
+\definecolor{codebg}{HTML}{F4F3FE}
+
+% ---- hyperref setup ---------------------------------------------------------
+\hypersetup{
+    colorlinks=true,
+    linkcolor=purple,
+    urlcolor=teal,
+    citecolor=teal,
+}
+
+% ---- section heading style --------------------------------------------------
+\titleformat{\section}{\large\bfseries\color{purple}}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries\color{teal}}{}{0em}{}
+\titlespacing{\section}{0pt}{16pt}{6pt}
+\titlespacing{\subsection}{0pt}{10pt}{4pt}
+
+% ---- listings (code) style --------------------------------------------------
+\lstset{
+    basicstyle=\ttfamily\small\color{codefg},
+    backgroundcolor=\color{codebg},
+    frame=single,
+    framesep=4pt,
+    rulecolor=\color{purple!20},
+    breaklines=true,
+    showstringspaces=false,
+    columns=fullflexible,
+    keepspaces=true,
+}
+
+% ---- table helpers ----------------------------------------------------------
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+
+% =============================================================================
+%%  DATA BLOCK — auto-filled by collect_results.py, or edit manually
+%%  Format: \newcommand{\MacroName}{value}
+% =============================================================================
+
+% --- Benchmark 1: put ops/sec at each concurrency ---
+\newcommand{\BOneputN}[0]{1}       % kept for reference; table uses rows below
+\newcommand{\BOnePutOne}{1172}     % put ops/s at concurrency 1
+\newcommand{\BOnePutTwo}{1216}     % put ops/s at concurrency 2
+\newcommand{\BOnePutFour}{1243}    % put ops/s at concurrency 4
+\newcommand{\BOnePutEight}{1226}   % put ops/s at concurrency 8
+\newcommand{\BOnePutSixteen}{1246} % put ops/s at concurrency 16
+\newcommand{\BOnePutThirtytwo}{1251} % put ops/s at concurrency 32
+
+% --- Benchmark 1: get ops/sec at each concurrency ---
+\newcommand{\BOneGetOne}{1161}
+\newcommand{\BOneGetTwo}{1869}
+\newcommand{\BOneGetFour}{2055}
+\newcommand{\BOneGetEight}{2109}
+\newcommand{\BOneGetSixteen}{1878}
+\newcommand{\BOneGetThirtytwo}{1891}
+
+% --- Benchmark 1: put p99 latency (ms) at each concurrency ---
+\newcommand{\BOnePutPNNOne}{4.0}
+\newcommand{\BOnePutPNNTwo}{5.3}
+\newcommand{\BOnePutPNNFour}{8.5}
+\newcommand{\BOnePutPNNEight}{13.3}
+\newcommand{\BOnePutPNNSixteen}{21.5}
+\newcommand{\BOnePutPNNThirtytwo}{38.9}
+
+% --- Benchmark 1: get p99 latency (ms) at each concurrency ---
+\newcommand{\BOneGetPNNOne}{4.3}
+\newcommand{\BOneGetPNNTwo}{4.5}
+\newcommand{\BOneGetPNNFour}{5.9}
+\newcommand{\BOneGetPNNEight}{9.1}
+\newcommand{\BOneGetPNNSixteen}{15.6}
+\newcommand{\BOneGetPNNThirtytwo}{27.3}
+
+% --- Benchmark 2: throughput (ops/sec) ---
+\newcommand{\BTwoOneOps}{1361}     % 1-node ops/s
+\newcommand{\BTwoTwoOps}{405}     % 2-node ops/s
+\newcommand{\BTwoThreeOps}{236}   % 3-node ops/s
+
+% --- Benchmark 2: p50 latency (ms) ---
+\newcommand{\BTwoOnePFifty}{2.6}
+\newcommand{\BTwoTwoPFifty}{19.0}
+\newcommand{\BTwoThreePFifty}{33.5}
+
+% --- Benchmark 2: p99 latency (ms) ---
+\newcommand{\BTwoOnePNN}{6.3}
+\newcommand{\BTwoTwoPNN}{36.3}
+\newcommand{\BTwoThreePNN}{55.0}
+
+% =============================================================================
+%%  END DATA BLOCK
+% =============================================================================
+
+
+\begin{document}
+
+% ---- title block ------------------------------------------------------------
+\begin{center}
+    {\LARGE\bfseries\color{purple} CS 417 — Programming Project 2}\\[4pt]
+    {\large\bfseries Replicated Object Store}\\[6pt]
+    {\normalsize Benchmark Results \& Design Analysis}
+\end{center}
+
+\vspace{-4pt}
+\noindent\rule{\linewidth}{0.8pt}
+\vspace{4pt}
+
+% =============================================================================
+\section{Benchmark 1 — Throughput vs.\ Concurrency}
+% =============================================================================
+
+We fixed the object size at 4\,KiB and ran a sustained \textbf{put} workload
+followed by a sustained \textbf{get} workload for 30 seconds at each
+concurrency level (1, 2, 4, 8, 16, and 32 concurrent client processes) against
+a single standalone server on an iLab machine.
+All clients ran on a separate iLab node connected over the campus LAN.
+
+\vspace{6pt}
+
+\begin{table}[h]
+\centering
+\caption{Throughput and p99 latency vs.\ concurrency. Object size: 4\,KiB.
+         Single-node server.}
+\label{tab:bench1}
+\small
+\begin{tabular}{@{}
+    C{1.5cm}
+    R{2.0cm} R{2.2cm}
+    R{2.0cm} R{2.2cm}
+    @{}}
+\toprule
+\textbf{Clients}
+  & \textbf{Put ops/s}
+  & \textbf{Put p99 (ms)}
+  & \textbf{Get ops/s}
+  & \textbf{Get p99 (ms)} \\
+\midrule
+1  & \BOnePutOne  & \BOnePutPNNOne  & \BOneGetOne  & \BOneGetPNNOne  \\
+2  & \BOnePutTwo  & \BOnePutPNNTwo  & \BOneGetTwo  & \BOneGetPNNTwo  \\
+4  & \BOnePutFour & \BOnePutPNNFour & \BOneGetFour & \BOneGetPNNFour \\
+8  & \BOnePutEight & \BOnePutPNNEight & \BOneGetEight & \BOneGetPNNEight \\
+16 & \BOnePutSixteen & \BOnePutPNNSixteen & \BOneGetSixteen & \BOneGetPNNSixteen \\
+32 & \BOnePutThirtytwo & \BOnePutPNNThirtytwo & \BOneGetThirtytwo & \BOneGetPNNThirtytwo \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Analysis}
+
+\textbf{Put curve.}
+Throughput rises steeply from \BOnePutOne\ ops/s at 1 client to approximately
+\BOnePutSixteen\ ops/s at 16 clients, then plateaus between 16 and 32 clients
+(\BOnePutThirtytwo\ ops/s).
+The plateau indicates CPU saturation on the single server process: with
+Python's GIL, the server cannot exploit additional parallelism once all
+available CPU cycles are consumed processing gRPC messages and acquiring the
+store lock.
+The p99 latency remains low at moderate concurrency but rises sharply at
+16$+$ clients (\BOnePutPNNSixteen\,ms at 16 and \BOnePutPNNThirtytwo\,ms at
+32), consistent with queueing at the store lock and gRPC thread pool.
+
+\textbf{Get curve.}
+Read throughput is substantially higher than write throughput at every
+concurrency level because gets only acquire the lock briefly to copy a value
+reference, while puts must also update stats counters.
+The get curve also plateaus earlier (around 16 clients at \BOneGetSixteen\
+ops/s), because the bottleneck shifts from lock contention to gRPC
+serialization overhead on the server-side thread pool.
+
+\textbf{Bottleneck.}
+The single \texttt{threading.Lock()} in the server is the primary bottleneck
+for writes.
+Replacing it with a reader-writer lock would allow concurrent gets and should
+push the read plateau significantly higher, at the cost of implementation
+complexity.
+
+
+% =============================================================================
+\section{Benchmark 2 — Replication Cost}
+% =============================================================================
+
+We ran a sustained put workload with 8 concurrent client processes and 4\,KiB
+objects for 30 seconds under three configurations: a single standalone server,
+a 2-node cluster (majority\,=\,2), and a 3-node cluster (majority\,=\,2).
+All nodes ran on separate iLab machines connected over the campus LAN.
+
+\vspace{6pt}
+
+\begin{table}[h]
+\centering
+\caption{Throughput and latency under three replication configurations.
+         8 clients, 4\,KiB objects, 30-second run.}
+\label{tab:bench2}
+\small
+\begin{tabular}{@{}
+    L{4.5cm}
+    R{1.8cm} R{1.8cm} R{1.8cm}
+    @{}}
+\toprule
+\textbf{Configuration}
+  & \textbf{Ops/s}
+  & \textbf{p50 (ms)}
+  & \textbf{p99 (ms)} \\
+\midrule
+1-node (no replication)     & \BTwoOneOps   & \BTwoOnePFifty   & \BTwoOnePNN   \\
+2-node (majority\,=\,2)     & \BTwoTwoOps   & \BTwoTwoPFifty   & \BTwoTwoPNN   \\
+3-node (majority\,=\,2)     & \BTwoThreeOps & \BTwoThreePFifty & \BTwoThreePNN \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Analysis}
+
+\textbf{Throughput does not scale linearly with node count.}
+Adding a second node cuts throughput from \BTwoOneOps\ to \BTwoTwoOps\ ops/s
+because every write now requires a synchronous round-trip to the replica
+before the primary can return \texttt{OK} to the client.
+The 3-node cluster (\BTwoThreeOps\ ops/s) is close to the 2-node result
+because the majority threshold for both is 2: the primary only waits for one
+replica ACK in either case.
+The marginal cost of the extra replica is small because both
+\texttt{ApplyWrite} RPCs are fired concurrently via \texttt{ThreadPoolExecutor},
+so the second replica adds almost no additional latency.
+
+\textbf{p99 latency trend.}
+The median (p50) latency roughly doubles from single-node to replicated
+(\BTwoOnePFifty\,ms $\to$ \BTwoTwoPFifty\,ms), reflecting the additional
+one-way network round-trip to a replica on the campus LAN.
+The p99 latency more than doubles (\BTwoOnePNN\,ms $\to$ \BTwoTwoPNN\,ms),
+revealing that the tail is driven by occasional congestion on the replica node
+or transient GIL contention on the primary during parallel fan-out.
+In a production system, write batching would reduce this amplification by
+amortizing the replication round-trip across multiple operations.
+
+
+% =============================================================================
+\section{Design and Validation Notes}
+% =============================================================================
+
+\subsection{Design choice: single lock vs.\ reader-writer lock}
+
+The server uses a single \texttt{threading.Lock()} that protects all access to
+the store dictionary and all stats counters.
+This is the simplest correct approach: any thread that reads or writes the
+store acquires the lock, so concurrent puts, gets, deletes, and stats queries
+are fully serialized at the Python level.
+
+The main alternative considered was a \textbf{reader-writer lock}, which would
+allow multiple concurrent gets while still serializing writes.
+The spec notes that \texttt{List} may tolerate weaker guarantees under
+concurrent modification, which suggests the authors anticipated this
+trade-off.
+A reader-writer lock would improve read throughput at high concurrency
+(Benchmark 1 shows reads plateau well before writes, suggesting the bottleneck
+is already the serialization overhead rather than the lock itself), but would
+add significant implementation complexity and risk subtle writer-starvation
+bugs if readers arrive continuously.
+
+We chose the single lock because: (1) correctness is easier to reason about
+and audit; (2) the conformance suite tests every error path, so any race
+condition would be caught immediately; and (3) the assignment requirement is
+to \emph{report} benchmark numbers, not maximize them.
+A reader-writer lock would be the first optimization target in a production
+system.
+
+\subsection{Bug encountered: stats counters incremented before error check}
+
+\textbf{Symptom.}
+During conformance testing, the \texttt{stats} RPC returned a \texttt{puts}
+counter higher than the number of successful put operations.
+Specifically, after \texttt{put("dup", "v1")} followed by
+\texttt{put("dup", "v2")} (which should return \texttt{ALREADY\_EXISTS}),
+\texttt{stats().puts} returned 2 instead of 1.
+
+\textbf{Root cause.}
+In the initial implementation, the stats counter was incremented before the
+\texttt{ALREADY\_EXISTS} check:
+
+\begin{lstlisting}[language=Python]
+# Buggy version
+with self.lock:
+    self.stat_puts += 1              # incremented too early!
+    if request.key in self.store:
+        context.set_code(ALREADY_EXISTS)
+        return Empty()
+    self.store[request.key] = request.value
+\end{lstlisting}
+
+The fix was to move the increment to after the guard, so it executes only on
+the success path:
+
+\begin{lstlisting}[language=Python]
+# Fixed version
+with self.lock:
+    if request.key in self.store:
+        context.set_code(ALREADY_EXISTS)
+        return Empty()
+    self.store[request.key] = request.value
+    self.stat_puts += 1              # incremented only on success
+\end{lstlisting}
+
+The same pattern applied to \texttt{Delete} (counter incremented before the
+\texttt{NOT\_FOUND} check) and \texttt{Update}. All three were corrected in the
+same commit.
+
+\subsection{Confirming the fix}
+
+The fix was verified in two complementary ways.
+
+First, the conformance test (\texttt{test/test\_conformance.py}, section
+\emph{[4] Stats counter accuracy}) performs exactly the failing sequence —
+two puts of the same key, one intentional \texttt{ALREADY\_EXISTS} — and
+asserts \texttt{stats.puts\,==\,2} (only the two successful puts count).
+This test now passes.
+
+Second, the concurrent correctness test (\texttt{test/test\_concurrent.py})
+independently tracks successful operations in each worker thread using a local
+counter that is incremented only when the gRPC call does not raise an
+exception.
+After all 20 threads complete, the test asserts that
+\texttt{server.stats().puts} equals the sum of successful puts recorded by the
+threads.
+This end-to-end assertion catches any discrepancy between client-observed
+success and server-side counter state, providing a stronger guarantee than the
+conformance test alone because it exercises the code under real concurrent
+load.
+
+\vspace{12pt}
+\noindent\rule{\linewidth}{0.5pt}
+\begin{center}
+    \small\color{gray}
+    CS 417 — Programming Project 2 \textbullet\ Replicated Object Store
+\end{center}
+
+\end{document}

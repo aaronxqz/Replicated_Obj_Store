@@ -1,0 +1,4 @@
+{"pid": 3519597, "op": "put", "ops": 9370, "errors": 0, "elapsed_s": 30.009, "ops_per_s": 312.24, "p50_ms": 2.795, "p95_ms": 6.29, "p99_ms": 8.248}
+{"pid": 3519599, "op": "put", "ops": 9317, "errors": 0, "elapsed_s": 30.001, "ops_per_s": 310.55, "p50_ms": 2.801, "p95_ms": 6.274, "p99_ms": 8.52}
+{"pid": 3519596, "op": "put", "ops": 9310, "errors": 0, "elapsed_s": 30.004, "ops_per_s": 310.29, "p50_ms": 2.811, "p95_ms": 6.309, "p99_ms": 8.404}
+{"pid": 3519598, "op": "put", "ops": 9308, "errors": 0, "elapsed_s": 30.005, "ops_per_s": 310.21, "p50_ms": 2.798, "p95_ms": 6.317, "p99_ms": 8.575}

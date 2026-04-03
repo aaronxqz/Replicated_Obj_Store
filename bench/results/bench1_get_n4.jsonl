@@ -1,0 +1,4 @@
+{"pid": 3525348, "op": "get", "ops": 15411, "errors": 0, "elapsed_s": 30.002, "ops_per_s": 513.66, "p50_ms": 1.724, "p95_ms": 3.82, "p99_ms": 5.873}
+{"pid": 3525349, "op": "get", "ops": 15338, "errors": 0, "elapsed_s": 30.001, "ops_per_s": 511.24, "p50_ms": 1.725, "p95_ms": 3.898, "p99_ms": 5.877}
+{"pid": 3525350, "op": "get", "ops": 15355, "errors": 0, "elapsed_s": 30.001, "ops_per_s": 511.82, "p50_ms": 1.723, "p95_ms": 3.988, "p99_ms": 5.86}
+{"pid": 3525351, "op": "get", "ops": 15535, "errors": 0, "elapsed_s": 30.001, "ops_per_s": 517.82, "p50_ms": 1.718, "p95_ms": 3.84, "p99_ms": 5.829}
